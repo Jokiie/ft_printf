@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccodere <marvin@42quebec.com>              +#+  +:+       +#+        */
+/*   By: ccodere <ccodere@student.42quebec.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 11:22:22 by ccodere           #+#    #+#             */
-/*   Updated: 2024/02/24 11:53:36 by ccodere          ###   ########.fr       */
+/*   Updated: 2024/03/06 10:02:54 by ccodere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libftprintf.h"
 
-int	ft_parse_pointer(char format, va_list arg_ptr)
+int	ft_parse_pointer(va_list args)
 {
 	int						count;
 	unsigned long			ptr;
@@ -20,26 +20,19 @@ int	ft_parse_pointer(char format, va_list arg_ptr)
 	char					*ptr_str;
 
 	count = 0;
-	if (format == '\0')
-		return (-1);
-	if (format == 'p')
-	{
-		ptr = (unsigned long)va_arg(arg_ptr, void *);
-		if (ptr == '\0')
-			count += ft_putstr("0x0");
-		else
-		{
-			ptr_str = ft_itoa_base(ptr, buffer, 16);
-			count += ft_putstr("0x");
-			count += ft_putstr(ptr_str);
-		}
-	}
+	ptr = (unsigned long)va_arg(args, void *);
+	if (ptr == '\0')
+		count += ft_putstr("0x0");
 	else
-		count += ft_putchar(format);
+	{
+		ptr_str = ft_itoa_base(ptr, buffer, 16);
+		count += ft_putstr("0x");
+		count += ft_putstr(ptr_str);
+	}
 	return (count);
 }
 
-int	ft_parse_chars(char format, va_list arg_ptr)
+int	ft_parse_chars(char format, va_list args)
 {
 	int	count;
 
@@ -47,9 +40,9 @@ int	ft_parse_chars(char format, va_list arg_ptr)
 	if (format == '\0')
 		return (-1);
 	if (format == 'c')
-		count += ft_putchar(va_arg(arg_ptr, int));
+		count += ft_putchar(va_arg(args, int));
 	else if (format == 's')
-		count += ft_putstr(va_arg(arg_ptr, char *));
+		count += ft_putstr(va_arg(args, char *));
 	else if (format == '%')
 		count += ft_putchar('%');
 	else
@@ -57,7 +50,7 @@ int	ft_parse_chars(char format, va_list arg_ptr)
 	return (count);
 }
 
-int	ft_parse_digits(char format, va_list arg_ptr)
+int	ft_parse_digits(char format, va_list args)
 {
 	int		count;
 
@@ -67,18 +60,18 @@ int	ft_parse_digits(char format, va_list arg_ptr)
 	if (format == 'd' || format == 'i')
 	{
 		if (format == '0' && ((format + 1) == 'x' || (format + 1) == 'X'))
-			count += ft_putbase_hex((long)(va_arg(arg_ptr, unsigned int)), 0);
+			count += ft_putbase_hex((long)(va_arg(args, unsigned int)), 0);
 		else if (count == '0')
-			count += ft_putbase((long)(va_arg(arg_ptr, unsigned int)), 8);
+			count += ft_putbase((long)(va_arg(args, unsigned int)), 8);
 		else
-			count += ft_putbase((long)(va_arg(arg_ptr, int)), 10);
+			count += ft_putbase((long)(va_arg(args, int)), 10);
 	}
 	else if (format == 'u')
-		count += ft_putbase((long)(va_arg(arg_ptr, unsigned int)), 10);
+		count += ft_putbase((long)(va_arg(args, unsigned int)), 10);
 	else if (format == 'x')
-		count += ft_putbase_hex((long)(va_arg(arg_ptr, unsigned int)), 0);
+		count += ft_putbase_hex((long)(va_arg(args, unsigned int)), 0);
 	else if (format == 'X')
-		count += ft_putbase_hex((long)(va_arg(arg_ptr, unsigned int)), 1);
+		count += ft_putbase_hex((long)(va_arg(args, unsigned int)), 1);
 	else
 		count += ft_putchar(format);
 	return (count);
@@ -86,10 +79,10 @@ int	ft_parse_digits(char format, va_list arg_ptr)
 
 int	ft_printf(const char *format, ...)
 {
-	va_list		arg_ptr;
+	va_list		args;
 	int			count;
 
-	va_start(arg_ptr, format);
+	va_start(args, format);
 	count = 0;
 	if (format == NULL)
 		return (-1);
@@ -99,16 +92,16 @@ int	ft_printf(const char *format, ...)
 		{
 			format++;
 			if (*format == 'c' || *format == 's' || *format == '%')
-				count += ft_parse_chars(*format, arg_ptr);
+				count += ft_parse_chars(*format, args);
 			else if (*format == 'p')
-				count += ft_parse_pointer(*format, arg_ptr);
+				count += ft_parse_pointer(args);
 			else
-				count += ft_parse_digits(*format, arg_ptr);
+				count += ft_parse_digits(*format, args);
 		}
 		else
 			count += ft_putchar(*format);
 		++format;
 	}
-	va_end(arg_ptr);
+	va_end(args);
 	return (count);
 }
