@@ -6,7 +6,7 @@
 /*   By: ccodere <ccodere@student.42quebec.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 11:22:22 by ccodere           #+#    #+#             */
-/*   Updated: 2024/03/06 10:02:54 by ccodere          ###   ########.fr       */
+/*   Updated: 2024/03/06 10:48:09 by ccodere          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,6 @@ int	ft_parse_chars(char format, va_list args)
 		count += ft_putstr(va_arg(args, char *));
 	else if (format == '%')
 		count += ft_putchar('%');
-	else
-		count += ft_putchar(format);
 	return (count);
 }
 
